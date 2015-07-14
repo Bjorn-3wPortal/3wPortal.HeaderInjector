@@ -1,0 +1,44 @@
+@using DotNetNuke.Web.Client.ClientResourceManagement;
+@{
+	@*
+		Config
+		-
+		Role name is case sensitive
+	*@
+
+	var myRole01 = "Marenor Users";
+	
+	@* var skinPath01 = Dnn.Tab.SkinPath; *@
+	string skinPath02 = "/DesktopModules/Net3wPortal.HeaderInjector/";
+	
+	string cssName = skinPath02 + "editorSimpleView.css";
+}
+
+@* 
+	Check user role
+	-
+	Superuser does ALWAYS get true from IsInRole
+*@
+@if(@Dnn.User.IsInRole(@myRole01) == true && @Dnn.User.IsSuperUser == false && @Dnn.User.IsInRole("Administrators") == false) {
+
+	@*
+		Add CSS file to header
+		-
+		Also check if file already is included
+	*@
+	var p2 = Context.CurrentHandler as Page;
+	bool foundTarget = false;
+
+	foreach(var c in p2.Header.Controls){
+		var headerCss = c as DnnCssInclude;
+		if(headerCss != null){
+			if(headerCss.FilePath == cssName.ToLower()){
+				foundTarget = true;
+			}
+		}
+	}
+	if(!foundTarget){
+		ClientResourceManager.RegisterStyleSheet(p2, cssName);
+	}
+
+}
